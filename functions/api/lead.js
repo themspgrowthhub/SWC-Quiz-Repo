@@ -13,7 +13,8 @@ const FIELD = {
   biggestConstraint: 'f2380',
   teamSize: 'f2381',
   turnover: 'f2382',
-  answers: 'f2383' // long text field
+  answers: 'f2383', // long text field
+  reportLink: 'f2384'
 };
 
 const API = 'https://api.ontraport.com/1';
@@ -42,6 +43,7 @@ export async function onRequestPost({ request, env }) {
     [FIELD.biggestConstraint]: d.biggestConstraint,
     [FIELD.teamSize]: d.teamSize,
     [FIELD.turnover]: d.turnover,
+    [FIELD.reportLink]: d.reportLink || '',
     [FIELD.answers]: (d.answers || []).map((x, i) => `${i + 1}. ${x.q} — ${x.a}`).join('\n')
   };
 

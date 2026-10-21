@@ -8,7 +8,9 @@
     autoAdvance: true,        // move to the next question shortly after an answer is picked
     leadEndpoint: '/api/lead',
     booking: 'https://go.themspgrowthhub.com/are-we-the-right-fit/',
-    videoEmbedUrl: ''         // e.g. a YouTube/Vimeo embed URL for Stuart's video; empty = placeholder
+    videoEmbedUrl: '',        // e.g. a YouTube/Vimeo embed URL for Stuart's video; empty = placeholder
+    siteUrl: 'https://quiz.themspgrowthhub.com/'  // base for the personal ?report= link
+
   };
 
   // ---------- Content ----------
@@ -35,7 +37,7 @@
   ];
   // [emoji, label, points]. Groups 'start' and 'about' are not scored.
   const Q = [
-    { g: 'start', t: 'Are you an MSP owner?', o: [['👍', 'Yes', 0], ['👋', 'No', 0]] },
+    { g: 'start', t: 'Are you a UK MSP owner?', o: [['👍', 'Yes', 0], ['👋', 'No', 0]] },
     { g: 'ambition', t: 'How clear is your growth plan?', o: [['😵‍💫', 'No plan, too distracted', 1], ['💭', 'It\'s in my head', 3], ['🧗', 'I have one, but don\'t stick to it', 5], ['🎯', 'Total clarity', 10]] },
     { g: 'ambition', t: 'Where do you want to be in 2–3 years?', goalSource: true, o: [['💷', 'Paying myself a decent wage', 1], ['📈', 'Past £1m turnover', 3], ['🔁', '£1m recurring revenue', 5], ['🚀', '£5m and beyond', 8]] },
     { g: 'ambition', t: 'How confident are you of getting there?', goal: true, o: [['😟', 'It\'s a pipe dream', 1], ['😐', 'Not very', 3], ['🙂', 'Mostly, with wobbles', 5], ['💪', 'On track', 10]] },
@@ -98,6 +100,22 @@
     if ((state.screen === 'results' || state.screen === 'report') && !state.submitted) state.screen = 'details';
   } catch (e) { /* storage unavailable */ }
   const save = () => { try { sessionStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { /* ignore */ } };
+
+  // ---------- Personal report link: ?report=<base64url {n:name, a:[answer idx], d:date}> ----------
+  function reportCode(name, answers) {
+    const json = JSON.stringify({ n: name, a: Q.map((x, i) => answers[i] ?? -1), d: new Date().toISOString().slice(0, 10) });
+    return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  let fromReportLink = false;
+  try {
+    const r = new URLSearchParams(location.search).get('report');
+    if (r) {
+      const d = JSON.parse(decodeURIComponent(escape(atob(r.replace(/-/g, '+').replace(/_/g, '/')))));
+      const a = {}; (d.a || []).forEach((v, i) => { if (v != null && v >= 0 && Q[i] && Q[i].o[v]) a[i] = v; });
+      state = { screen: 'report', qi: 0, answers: a, form: { name: d.n || '', email: '', phone: '' }, reportDate: d.d, submitted: true };
+      fromReportLink = true;
+    }
+  } catch (e) { console.warn('Invalid report link'); }
 
   // ---------- Scoring ----------
   function score() {
@@ -201,7 +219,9 @@
   }
   function start() {
     track('quiz_started');
-    state.qi = 0; state.answers = {}; state.submitted = false;
+    state.qi = 0; state.answers = {}; state.submitted = false; delete state.reportDate;
+    // a fresh quiz shouldn't reopen someone's shared report on refresh
+    if (location.search.includes('report=')) history.replaceState(null, '', location.pathname);
     go('quiz');
   }
 
@@ -246,6 +266,7 @@
       teamSize: answerText(TEAM_Q),
       turnover: answerText(TURNOVER_Q),
       answers: Q.map((x, i) => ({ q: x.t, a: answerText(i) })),
+      reportLink: CONFIG.siteUrl + '?report=' + reportCode(f.name.trim(), state.answers),
       source: 'msp-confidence-score', submittedAt: new Date().toISOString(),
       pageUrl: location.href, referrer: document.referrer
     };
@@ -303,7 +324,7 @@
     const s = score();
     renderStageCommon(s);
     setText('.js-full-name', state.form.name.trim());
-    setText('.js-today', new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }));
+    setText('.js-today', (state.reportDate ? new Date(state.reportDate) : new Date()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }));
     setPill('.js-stage-pill-report', s.stage, false, s.stage.name);
     $('#rep-pillars').innerHTML = s.pillars.map(p => `
       <div class="rp-pillar${p.isFocus ? ' focus' : ''}">
@@ -381,6 +402,7 @@
     form.addEventListener('submit', submit);
 
     go(state.screen, true);
+    if (fromReportLink) track('report_link_opened');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
