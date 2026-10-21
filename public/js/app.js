@@ -153,7 +153,7 @@
     if (!restored) window.scrollTo(0, 0);
     const t = restored ? () => {} : track;
     if (screen === 'quiz') renderQuiz();
-    if (screen === 'details') { renderMock(); t('quiz_completed'); }
+    if (screen === 'details') t('quiz_completed');
     if (screen === 'results') { renderResults(); t('results_viewed'); }
     if (screen === 'report') { renderReport(); t('report_viewed'); }
     document.title = screen === 'landing' ? 'The MSP Confidence Score · The MSP Growth Hub'
@@ -236,12 +236,7 @@
     };
     return ok;
   }
-  // Report mockup beside the form shows their name as they type
   const today = () => (state.reportDate ? new Date(state.reportDate) : new Date()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-  function renderMock() {
-    setText('.js-cover-name', state.form.name.trim() || 'Your Name');
-    setText('.js-today', today());
-  }
   function showErrors(ok) {
     Object.keys(ok).forEach(k => {
       const field = $(`.field[data-field="${k}"]`);
@@ -404,7 +399,7 @@
     ['name', 'email', 'company', 'phone'].forEach(k => {
       const input = form.elements[k];
       input.value = state.form[k] || '';
-      input.addEventListener('input', () => { state.form[k] = input.value; save(); if (k === 'name') renderMock(); if (tried) showErrors(validate()); });
+      input.addEventListener('input', () => { state.form[k] = input.value; save(); if (tried) showErrors(validate()); });
     });
     form.addEventListener('submit', submit);
 

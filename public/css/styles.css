@@ -185,24 +185,7 @@ img{max-width:100%}
 .fine{font-size:13px;line-height:1.5;color:var(--text-muted)}
 .report-mock-wrap{position:relative;display:flex;justify-content:center;padding:24px 0}
 .report-mock-wrap .blue-block{position:absolute;top:0;right:8%;bottom:0;left:18%;background:var(--msp-blue);border-radius:16px}
-.report-mock{position:relative;width:min(100%,320px);aspect-ratio:210/297;background:var(--msp-navy);border-radius:8px;box-shadow:var(--shadow-lg);overflow:hidden;display:flex;flex-direction:column;transform:rotate(-3deg)}
-.rm-top{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:18px 20px 0}
-.rm-top .logo{height:20px}
-.rm-k{font-family:var(--font-display);font-weight:700;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--msp-yellow)}
-.rm-k-sm{font-size:6px}
-.rm-media{position:relative;margin:16px 20px 0;height:43%}
-.rm-media .orange-block{position:absolute;top:0;right:0;width:84%;height:84%;background:var(--msp-orange);border-radius:8px}
-.rm-media .photo-main{position:absolute;top:9%;left:0;width:78%;height:64%;border-radius:8px;overflow:hidden}
-.rm-media .photo-inset{position:absolute;right:5%;bottom:0;width:44%;height:36%;border:3px solid var(--msp-navy);border-radius:10px;background:var(--msp-navy);overflow:hidden}
-.rm-media img{width:100%;height:100%;object-fit:cover;display:block}
-.rm-media .photo-inset img{border-radius:7px}
-.rm-body{flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:10px;padding:18px 20px 20px}
-.rm-title{font-family:var(--font-display);font-weight:700;font-size:19px;line-height:1.08;letter-spacing:-.01em;color:#fff;text-wrap:balance}
-.rm-title span{color:var(--msp-yellow)}
-.rm-meta{border-top:1px dashed var(--msp-navy-80);padding-top:8px;display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
-.rm-for{display:flex;flex-direction:column;gap:2px;min-width:0}
-.rm-name{font-family:var(--font-display);font-weight:700;font-size:11px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rm-date{font-size:8px;color:#fff;white-space:nowrap}
+.report-mock{position:relative;display:block;width:min(100%,320px);height:auto;border-radius:8px;box-shadow:var(--shadow-lg);transform:rotate(-3deg)}
 
 /* ======================================================================
    RESULTS
