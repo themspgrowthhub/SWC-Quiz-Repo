@@ -185,7 +185,7 @@ img{max-width:100%}
 .fine{font-size:13px;line-height:1.5;color:var(--text-muted)}
 .report-mock-wrap{position:relative;display:flex;justify-content:center;padding:24px 0}
 .report-mock-wrap .blue-block{position:absolute;top:0;right:8%;bottom:0;left:18%;background:var(--msp-blue);border-radius:16px}
-.report-mock{position:relative;display:block;width:min(100%,320px);height:auto;border-radius:8px;box-shadow:var(--shadow-lg);transform:rotate(-3deg)}
+.report-mock{position:relative;display:block;align-self:center;flex:none;width:min(100%,320px);height:auto;aspect-ratio:801/1160;object-fit:contain;border-radius:8px;box-shadow:var(--shadow-lg);transform:rotate(-3deg)}
 
 /* ======================================================================
    RESULTS
