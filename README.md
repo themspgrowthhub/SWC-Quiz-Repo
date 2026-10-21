@@ -68,9 +68,9 @@ If Zaraz isn't loaded (e.g. local preview), events are queued on `window.__quizE
 
 ## Lead payload (POST /api/lead)
 
-`firstName, lastName, email, phone, overallScore, stage, ambitionScore, capacityScore, opportunitiesScore, biggestConstraint, teamSize, turnover, answers[], reportLink, source, submittedAt, pageUrl, referrer`
+`firstName, lastName, email, phone, company, overallScore, stage, ambitionScore, capacityScore, opportunitiesScore, biggestConstraint, teamSize, turnover, answers[], reportLink, source, submittedAt, pageUrl, referrer`
 
-`functions/api/lead.js` maps these to Ontraport custom fields f2375–f2384 (f2384 = Report Link) and applies the tag `Quiz Taken - Stage: {Survive|Drive|Thrive|Arrive}`.
+`functions/api/lead.js` maps these to Ontraport custom fields f2375–f2384 (f2384 = Report Link), saves `company` to the standard Company field and applies the tag `Quiz Taken - Stage: {Survive|Drive|Thrive|Arrive}`.
 
 ## Local preview
 

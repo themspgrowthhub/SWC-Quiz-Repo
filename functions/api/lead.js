@@ -35,6 +35,7 @@ export async function onRequestPost({ request, env }) {
     lastname: d.lastName || '',
     email: d.email,
     sms_number: d.phone || '',
+    company: d.company || '',
     [FIELD.overallScore]: d.overallScore,
     [FIELD.stage]: d.stage,
     [FIELD.ambitionScore]: d.ambitionScore,

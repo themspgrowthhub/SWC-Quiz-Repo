@@ -92,7 +92,7 @@
 
   // ---------- State (persisted per tab so a refresh doesn't lose progress) ----------
   const STORE = 'msp-confidence-score';
-  let state = { screen: 'landing', qi: 0, answers: {}, form: { name: '', email: '', phone: '' } };
+  let state = { screen: 'landing', qi: 0, answers: {}, form: { name: '', email: '', company: '', phone: '' } };
   try {
     const saved = JSON.parse(sessionStorage.getItem(STORE) || 'null');
     if (saved && saved.screen) state = Object.assign(state, saved);
@@ -112,7 +112,7 @@
     if (r) {
       const d = JSON.parse(decodeURIComponent(escape(atob(r.replace(/-/g, '+').replace(/_/g, '/')))));
       const a = {}; (d.a || []).forEach((v, i) => { if (v != null && v >= 0 && Q[i] && Q[i].o[v]) a[i] = v; });
-      state = { screen: 'report', qi: 0, answers: a, form: { name: d.n || '', email: '', phone: '' }, reportDate: d.d, submitted: true };
+      state = { screen: 'report', qi: 0, answers: a, form: { name: d.n || '', email: '', company: '', phone: '' }, reportDate: d.d, submitted: true };
       fromReportLink = true;
     }
   } catch (e) { console.warn('Invalid report link'); }
@@ -153,7 +153,7 @@
     if (!restored) window.scrollTo(0, 0);
     const t = restored ? () => {} : track;
     if (screen === 'quiz') renderQuiz();
-    if (screen === 'details') t('quiz_completed');
+    if (screen === 'details') { renderMock(); t('quiz_completed'); }
     if (screen === 'results') { renderResults(); t('results_viewed'); }
     if (screen === 'report') { renderReport(); t('report_viewed'); }
     document.title = screen === 'landing' ? 'The MSP Confidence Score · The MSP Growth Hub'
@@ -231,9 +231,16 @@
     const ok = {
       name: !!f.name.trim(),
       email: EMAIL_RE.test(f.email.trim()),
+      company: !!(f.company || '').trim(),
       phone: f.phone.replace(/[^\d]/g, '').length >= 10
     };
     return ok;
+  }
+  // Report mockup beside the form shows their name as they type
+  const today = () => (state.reportDate ? new Date(state.reportDate) : new Date()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  function renderMock() {
+    setText('.js-cover-name', state.form.name.trim() || 'Your Name');
+    setText('.js-today', today());
   }
   function showErrors(ok) {
     Object.keys(ok).forEach(k => {
@@ -247,7 +254,7 @@
   function submit(e) {
     e.preventDefault();
     const ok = validate();
-    if (!(ok.name && ok.email && ok.phone)) {
+    if (!(ok.name && ok.email && ok.company && ok.phone)) {
       tried = true; showErrors(ok);
       const firstBad = Object.keys(ok).find(k => !ok[k]);
       $(`.field[data-field="${firstBad}"] input`).focus();
@@ -259,7 +266,7 @@
     const parts = f.name.trim().split(/\s+/);
     const payload = {
       firstName: parts[0], lastName: parts.slice(1).join(' '),
-      email: f.email.trim(), phone: f.phone.trim(),
+      email: f.email.trim(), phone: f.phone.trim(), company: f.company.trim(),
       overallScore: overall, stage: stage.name,
       ambitionScore: raw[0].pct, capacityScore: raw[1].pct, opportunitiesScore: raw[2].pct,
       biggestConstraint: pillars.find(p => p.isFocus).name,
@@ -324,7 +331,7 @@
     const s = score();
     renderStageCommon(s);
     setText('.js-full-name', state.form.name.trim());
-    setText('.js-today', (state.reportDate ? new Date(state.reportDate) : new Date()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }));
+    setText('.js-today', today());
     setPill('.js-stage-pill-report', s.stage, false, s.stage.name);
     $('#rep-pillars').innerHTML = s.pillars.map(p => `
       <div class="rp-pillar${p.isFocus ? ' focus' : ''}">
@@ -394,10 +401,10 @@
     });
 
     const form = $('#lead-form');
-    ['name', 'email', 'phone'].forEach(k => {
+    ['name', 'email', 'company', 'phone'].forEach(k => {
       const input = form.elements[k];
       input.value = state.form[k] || '';
-      input.addEventListener('input', () => { state.form[k] = input.value; save(); if (tried) showErrors(validate()); });
+      input.addEventListener('input', () => { state.form[k] = input.value; save(); if (k === 'name') renderMock(); if (tried) showErrors(validate()); });
     });
     form.addEventListener('submit', submit);
 

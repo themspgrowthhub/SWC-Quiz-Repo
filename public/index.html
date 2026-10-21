@@ -162,6 +162,10 @@
             <input name="email" type="email" placeholder="jamie@yourmsp.co.uk" autocomplete="email" required>
             <span class="err" hidden>Please add a valid business email</span>
           </label>
+          <label class="field" data-field="company"><span>Company name</span>
+            <input name="company" type="text" placeholder="Your MSP Ltd" autocomplete="organization" required>
+            <span class="err" hidden>Please add your company name</span>
+          </label>
           <label class="field" data-field="phone"><span>Phone</span>
             <input name="phone" type="tel" placeholder="07700 900123" autocomplete="tel" required>
             <span class="err" hidden>Please add a valid phone number</span>
@@ -172,14 +176,25 @@
       </form>
 
       <div class="report-mock-wrap" aria-hidden="true">
-        <div class="navy-block"></div>
+        <div class="blue-block"></div>
         <div class="report-mock">
-          <div class="report-mock-inner">
-            <img class="logo logo-24" src="assets/img/logo-primary.webp" alt="" width="52" height="24">
-            <div class="report-mock-copy">
-              <div class="k">MSP Confidence Score Report</div>
-              <div class="t">Your Score, Stage &amp; Next Move</div>
-              <div class="lines"><i></i><i></i><i></i></div>
+          <div class="rm-top">
+            <span class="rm-k">MSP Confidence Score Report</span>
+            <img class="logo" src="assets/img/logo-white-no-tagline.webp" alt="" width="43" height="20">
+          </div>
+          <div class="rm-media">
+            <div class="orange-block"></div>
+            <div class="photo-main"><img src="assets/img/event.webp" alt="" width="1400" height="933" loading="lazy"></div>
+            <div class="photo-inset"><img src="assets/img/stuart-and-ian.webp" alt="" width="900" height="600" loading="lazy"></div>
+          </div>
+          <div class="rm-body">
+            <div class="rm-title">How Confident Are You To Scale Your MSP To <span>£1m And Beyond?</span></div>
+            <div class="rm-meta">
+              <div class="rm-for">
+                <span class="rm-k rm-k-sm">Report For</span>
+                <span class="rm-name js-cover-name">Your Name</span>
+              </div>
+              <span class="rm-date js-today"></span>
             </div>
           </div>
         </div>
