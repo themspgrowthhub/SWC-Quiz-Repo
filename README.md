@@ -34,7 +34,7 @@ After that, every push to `main` deploys to production and other branches get pr
 
 | Key | Default | Notes |
 |---|---|---|
-| `showEmoji` | `true` | The brand guide says no emoji; set `false` to hide answer emoji |
+| `showEmoji` | `true` | Kept on by decision (Oct 2026), despite the brand guide's no-emoji rule; `false` hides answer emoji |
 | `autoAdvance` | `true` | Go to the next question 260ms after an answer |
 | `leadEndpoint` | `/api/lead` | |
 | `booking` | go.themspgrowthhub.com/are-we-the-right-fit/ | Gets `?name=&email=&phone=` |
@@ -84,7 +84,6 @@ Put local secrets in `.dev.vars` (git-ignored) if you want the function to reach
 
 - Stuart's video (placeholder)
 - Quotes about the quiz and testimonial headshots (placeholders)
-- Emoji vs brand guide (`showEmoji`)
 - Fonts are served as .otf; converting to .woff2 would cut font weight roughly in half
 
 ## Personal report link

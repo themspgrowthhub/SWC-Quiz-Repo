@@ -4,7 +4,7 @@
 
   // ---------- Config ----------
   const CONFIG = {
-    showEmoji: true,          // brand guide says no emoji; flip to false to hide answer emoji
+    showEmoji: true,          // kept on by decision, despite the brand guide; false hides answer emoji
     autoAdvance: true,        // move to the next question shortly after an answer is picked
     leadEndpoint: '/api/lead',
     booking: 'https://go.themspgrowthhub.com/are-we-the-right-fit/',
