@@ -9,7 +9,7 @@
     leadEndpoint: '/api/lead',
     booking: 'https://go.themspgrowthhub.com/are-we-the-right-fit/',
     videoEmbedUrl: '',        // e.g. a YouTube/Vimeo embed URL for Stuart's video; empty = placeholder
-    siteUrl: 'https://quiz.themspgrowthhub.com/'  // base for the personal ?report= link
+    siteUrl: 'https://themspgrowthhubquiz.com/'  // base for the personal ?report= link
 
   };
 

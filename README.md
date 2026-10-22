@@ -1,6 +1,6 @@
 # MSP Confidence Score
 
-Production site for **quiz.themspgrowthhub.com**: a static HTML/CSS/vanilla JS quiz deployed on Cloudflare Pages, with one Pages Function that sends leads to Ontraport.
+Production site for **themspgrowthhubquiz.com**: a static HTML/CSS/vanilla JS quiz deployed on Cloudflare Pages, with one Pages Function that sends leads to Ontraport.
 
 ```
 public/              static site (Pages build output)
@@ -23,7 +23,7 @@ One-off setup in Cloudflare:
 1. **Workers & Pages → Create → Pages → Connect to Git**, pick `themspgrowthhub/SWC-Quiz-Repo`.
 2. Production branch: `main`. Framework preset: **None**. Build command: *(leave empty)*. Build output directory: `public`.
 3. **Settings → Variables and Secrets**: add `ONTRAPORT_APP_ID` and `ONTRAPORT_API_KEY` as **secrets** (Production, and Preview if wanted).
-4. **Custom domains**: add `quiz.themspgrowthhub.com`.
+4. **Custom domains**: add `themspgrowthhubquiz.com`.
 5. **Zaraz** (on the zone): enable it, then map the events below to your tools (e.g. Meta Pixel `lead_submitted` → Lead, `booking_click` → Schedule).
 
 After that, every push to `main` deploys to production and other branches get preview URLs.
@@ -39,7 +39,7 @@ After that, every push to `main` deploys to production and other branches get pr
 | `leadEndpoint` | `/api/lead` | |
 | `booking` | go.themspgrowthhub.com/are-we-the-right-fit/ | Gets `?name=&email=&phone=` |
 | `videoEmbedUrl` | `''` | Set to Stuart's video embed URL to replace the placeholder |
-| `siteUrl` | https://quiz.themspgrowthhub.com/ | Base of the personal `?report=` link; must match the live domain |
+| `siteUrl` | https://themspgrowthhubquiz.com/ | Base of the personal `?report=` link; must match the live domain |
 
 Testimonial headshots: add WebP files to `public/assets/img/` and set `photo` on each entry in `TESTIMONIALS` / `QUIZ_PROOF`. Until then initials are shown.
 

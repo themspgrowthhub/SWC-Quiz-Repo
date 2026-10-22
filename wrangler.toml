@@ -1,4 +1,4 @@
-# Cloudflare Pages project for quiz.themspgrowthhub.com
+# Cloudflare Pages project for themspgrowthhubquiz.com
 # Static site lives in public/, Pages Functions in functions/ (POST /api/lead).
 # Secrets ONTRAPORT_APP_ID and ONTRAPORT_API_KEY are set in the Cloudflare dashboard
 # (Pages → Settings → Variables and Secrets) or with `wrangler pages secret put`, never here.
