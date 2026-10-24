@@ -37,7 +37,7 @@ After that, every push to `main` deploys to production and other branches get pr
 | `showEmoji` | `true` | Kept on by decision (Oct 2026), despite the brand guide's no-emoji rule; `false` hides answer emoji |
 | `autoAdvance` | `true` | Go to the next question 260ms after an answer |
 | `leadEndpoint` | `/api/lead` | |
-| `booking` | go.themspgrowthhub.com/are-we-the-right-fit/ | Gets `?name=&email=&phone=` |
+| `booking` | calendly.com/the-msp-growth-hub/right-fit-clarity-call | Gets `name`, `email` and `a1` (phone); see Booking below |
 | `videoEmbedUrl` | `''` | Set to Stuart's video embed URL to replace the placeholder |
 | `siteUrl` | https://themspgrowthhubquiz.com/ | Base of the personal `?report=` link; must match the live domain |
 
@@ -91,3 +91,10 @@ Put local secrets in `.dev.vars` (git-ignored) if you want the function to reach
 On submit the quiz builds `reportLink` = `siteUrl` + `?report=<code>`, where the code is base64url JSON of `{ n: name, a: [answer index per question, -1 if blank], d: "YYYY-MM-DD" }`. It is sent in the lead payload and saved to Ontraport's Report Link field, so the results email can link straight back to the report. Opening that URL loads the report screen with their results and date. No email or phone is in the link.
 
 The report prints as A4 portrait (`@page { size: A4 portrait; margin: 0 }`, each page fixed at 210 × 297 mm).
+
+## Booking (Calendly)
+
+- The results page `#book` section embeds `https://calendly.com/the-msp-growth-hub/right-fit-clarity-call?hide_event_type_details=1&hide_gdpr_banner=1` inline, as an iframe with `embed_type=Inline&embed_domain=<host>`.
+- It is pre-filled with `name`, `email` and `a1` = phone. `a1` is the first custom question on the Calendly event, so that question must be "Phone". Empty values are left out.
+- The report's "Book" button opens the same URL (without the embed parameters) in a new tab.
+- The results email lives in Ontraport, not in this repo. Its booking button deliberately links to `https://go.themspgrowthhub.com/are-we-the-right-fit/`; don't change it to Calendly.

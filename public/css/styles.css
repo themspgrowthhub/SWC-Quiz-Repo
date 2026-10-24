@@ -237,8 +237,8 @@ img{max-width:100%}
 .book-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
 .book-head h2{font-size:clamp(28px,3.4vw,40px);line-height:1.12;color:#fff}
 .book-head p{font-size:clamp(16px,1.6vw,18px);line-height:1.6;color:#fff;max-width:34em}
-.book-frame{background:#fff;border-radius:16px;overflow:hidden;min-height:760px}
-.book-frame iframe{width:100%;height:900px;border:0;display:block}
+.book-frame{background:#fff;border-radius:16px;overflow:hidden}
+.book-frame iframe{width:100%;min-width:320px;height:760px;border:0;display:block}
 
 /* ======================================================================
    REPORT

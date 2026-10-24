@@ -7,7 +7,8 @@
     showEmoji: true,          // kept on by decision, despite the brand guide; false hides answer emoji
     autoAdvance: true,        // move to the next question shortly after an answer is picked
     leadEndpoint: '/api/lead',
-    booking: 'https://go.themspgrowthhub.com/are-we-the-right-fit/',
+    // Calendly event; pre-filled with name, email and a1 (first custom question, which must be "Phone")
+    booking: 'https://calendly.com/the-msp-growth-hub/right-fit-clarity-call?hide_event_type_details=1&hide_gdpr_banner=1',
     videoEmbedUrl: '',        // e.g. a YouTube/Vimeo embed URL for Stuart's video; empty = placeholder
     siteUrl: 'https://themspgrowthhubquiz.com/'  // base for the personal ?report= link
 
@@ -142,8 +143,12 @@
 
   function bookingUrl() {
     const f = state.form;
-    return CONFIG.booking + '?' + new URLSearchParams({ name: f.name.trim(), email: f.email.trim(), phone: f.phone.trim() }).toString();
+    const pre = { name: f.name.trim(), email: f.email.trim(), a1: f.phone.trim() };
+    Object.keys(pre).forEach(k => { if (!pre[k]) delete pre[k]; });
+    const qs = new URLSearchParams(pre).toString();
+    return CONFIG.booking + (qs ? '&' + qs : '');
   }
+  const bookingEmbedUrl = () => bookingUrl() + '&embed_type=Inline&embed_domain=' + encodeURIComponent(location.hostname || 'themspgrowthhubquiz.com');
 
   // ---------- Navigation ----------
   // restored = re-showing a saved screen after a refresh, so funnel events aren't double-counted
@@ -317,7 +322,7 @@
         <p>${esc(p.text)}</p>
       </div>`).join('');
     $('#res-testimonials').innerHTML = TESTIMONIALS.map(t => quoteCard(t, 'solid', 56)).join('');
-    const frame = $('#booking-frame'), url = bookingUrl();
+    const frame = $('#booking-frame'), url = bookingEmbedUrl();
     if (frame.getAttribute('src') !== url) frame.setAttribute('src', url);
   }
 
