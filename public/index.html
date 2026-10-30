@@ -12,8 +12,9 @@
 <meta property="og:description" content="The free MSP Confidence Score: 12 quick questions, an instant score and a personal PDF report.">
 <meta property="og:image" content="https://themspgrowthhubquiz.com/assets/img/event.webp">
 <meta name="theme-color" content="#212340">
-<link rel="preload" href="assets/fonts/Lufga-Bold.otf" as="font" type="font/otf" crossorigin>
-<link rel="preload" href="assets/fonts/NeuzeitGrotesk-Regular.otf" as="font" type="font/otf" crossorigin>
+<link rel="preload" href="assets/fonts/Lufga-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/NeuzeitGrotesk-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/NeuzeitGrotesk-Bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/styles.css">
 <script src="js/app.js" defer></script>
 </head>
@@ -71,10 +72,6 @@
             <p>How reliably you win new clients, grow existing ones, and back marketing that works.</p>
           </div>
         </div>
-        <div class="proof">
-          <h3>What MSP Owners Discovered</h3>
-          <div class="grid-300" id="quiz-proof"></div>
-        </div>
       </div>
     </section>
 
@@ -93,6 +90,15 @@
         </div>
         <div class="diagram-card">
           <img src="assets/img/msp-journey-pyramid.webp" alt="The MSP Journey: Survive, Drive, Thrive, Arrive" width="1400" height="854" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section class="section-subtle reviews">
+      <div class="wrap-1152 reviews-inner">
+        <h2 class="h2-section reviews-title">This Quiz Is Built On The Framework That's Helped 100+ UK MSPs Scale</h2>
+        <div class="marquee" aria-label="Reviews from MSP owners">
+          <div class="marquee-track" id="review-track"></div>
         </div>
       </div>
     </section>
@@ -190,7 +196,7 @@
     <button class="link-btn" type="button" data-action="report">View my report</button>
   </header>
 
-  <section class="score-hero">
+  <section class="score-hero on-navy">
     <div class="score-hero-inner">
       <h1><span class="js-first" style="color:inherit"></span>, Your MSP Confidence Score Is <span class="js-overall-pct"></span></h1>
       <div class="stage-line">
@@ -198,13 +204,15 @@
         <span class="pill js-stage-pill-results"></span>
       </div>
       <div class="video-block">
-        <div class="video-title">Next Step: Watch This Video From Stuart</div>
-        <button class="video" type="button" data-action="video" id="video">
+        <div class="video-title">Next Step: Watch Ian Explain The <span class="js-stage-name"></span> Stage</div>
+        <div class="video-frame" id="video-frame"></div>
+        <button class="video" type="button" data-action="video" id="video" hidden>
           <span class="inner">
             <span class="play" aria-hidden="true">▶</span>
-            <span class="cap">Video placeholder · Stuart explains your score (in edit)</span>
+            <span class="cap">Video placeholder · <span class="js-stage-name"></span> stage video from Ian</span>
           </span>
         </button>
+        <figure class="stage-quote" id="stage-quote"></figure>
         <div class="center-row">
           <button class="btn btn-lg btn-inverse" type="button" data-action="book-results">Book Your MSP Growth Call →</button>
         </div>
@@ -239,13 +247,14 @@
     </div>
   </section>
 
-  <section id="book" class="book">
+  <section id="book" class="book on-navy">
     <div class="book-inner">
       <div class="book-head">
         <div class="overline on-dark">Your Next Move</div>
         <h2>Book Your MSP Growth Call</h2>
-        <p>A free call with Ian or Stuart to turn your score into a plan. Pick a time below. Your details are already filled in.</p>
+        <p>A free call with Ian to turn your score into a plan. Pick a time below. Your details are already filled in.</p>
       </div>
+      <figure class="book-quote" id="book-quote"></figure>
       <div class="book-frame">
         <iframe id="booking-frame" title="Book your MSP Growth Call" loading="lazy"></iframe>
       </div>
@@ -309,7 +318,7 @@
       <div id="rep-pillars" style="display:flex;flex-direction:column;gap:clamp(20px,3vw,28px)"></div>
     </div>
 
-    <div class="page dark">
+    <div class="page dark on-navy">
       <img class="watermark" src="assets/img/logo-white-no-tagline.webp" alt="">
       <div class="overline on-dark">03 · Your Next Step</div>
       <h2>Let's Build An MSP That Works For You</h2>

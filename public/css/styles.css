@@ -1,10 +1,10 @@
 /* MSP Confidence Score: production styles. Tokens from the MSP Growth Hub design system. */
 
 /* ---------- Fonts (self-hosted; only Regular 400 + Bold 700 are licensed) ---------- */
-@font-face{font-family:'Lufga';src:url('../assets/fonts/Lufga-Regular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Lufga';src:url('../assets/fonts/Lufga-Bold.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap}
-@font-face{font-family:'Neuzeit Grotesk';src:url('../assets/fonts/NeuzeitGrotesk-Regular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Neuzeit Grotesk';src:url('../assets/fonts/NeuzeitGrotesk-Bold.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Lufga';src:url('../assets/fonts/Lufga-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Lufga';src:url('../assets/fonts/Lufga-Bold.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Neuzeit Grotesk';src:url('../assets/fonts/NeuzeitGrotesk-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Neuzeit Grotesk';src:url('../assets/fonts/NeuzeitGrotesk-Bold.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
 
 /* ---------- Tokens ---------- */
 :root{
@@ -71,9 +71,6 @@ img{max-width:100%}
 .lead-copy{font-size:clamp(16px,1.6vw,18px);line-height:1.6}
 
 /* ---------- Image placeholders (testimonial headshots) ---------- */
-.avatar{flex:none;border-radius:50%;background:var(--msp-grey-100);border:1px dashed var(--msp-grey-300);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--msp-grey-500);overflow:hidden}
-.avatar img{width:100%;height:100%;object-fit:cover}
-.avatar-48{width:48px;height:48px}.avatar-56{width:56px;height:56px}
 
 /* ======================================================================
    LANDING
@@ -105,12 +102,9 @@ img{max-width:100%}
 .pillar-card .num{font-family:var(--font-display);font-weight:700;font-size:13px;letter-spacing:.12em;color:var(--msp-blue)}
 .pillar-card h3{font-size:clamp(19px,2vw,22px);line-height:1.2}
 .pillar-card p{font-size:16px;line-height:1.6}
-.proof{display:flex;flex-direction:column;gap:clamp(14px,2vw,20px);padding-top:8px}
-.proof h3{font-size:clamp(19px,2vw,22px)}
 .quote-card{margin:0;background:#fff;border-radius:16px;display:flex;flex-direction:column}
-.quote-card.dashed{border:1px dashed var(--msp-grey-300);padding:clamp(18px,2.6vw,24px);gap:18px}
-.quote-card blockquote{margin:0;font-size:clamp(16px,1.5vw,17px);line-height:1.6;color:var(--msp-navy)}
-.quote-card figcaption{display:flex;align-items:center;gap:12px}
+.quote-card blockquote{margin:0;font-size:clamp(16px,1.5vw,17px);line-height:1.6;color:var(--msp-navy);text-wrap:pretty}
+.quote-card figcaption{display:flex;flex-direction:column;gap:2px}
 .who{display:flex;flex-direction:column;gap:2px}
 .who b{font-family:var(--font-display);font-weight:700;color:var(--msp-navy)}
 .who small{font-size:14px;color:var(--text-muted)}
@@ -123,8 +117,24 @@ img{max-width:100%}
 .diagram-card{background:#fff;border-radius:16px;padding:clamp(16px,3vw,32px)}
 .diagram-card img,.diagram img{width:100%;height:auto;display:block}
 
-.closing{padding:clamp(64px,8vw,112px) var(--pad-x)}
+.closing{background:var(--msp-blue);padding:clamp(64px,8vw,112px) var(--pad-x)}
+.closing h2,.closing p{color:#fff}
 .closing-inner{max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center;gap:clamp(14px,2vw,20px)}
+
+/* Review carousel: two copies of the list scroll left forever; hover pauses */
+.reviews{overflow:hidden}
+.reviews-inner{display:flex;flex-direction:column;gap:clamp(24px,3vw,32px)}
+.reviews-title{color:var(--msp-blue);max-width:760px;margin:0 auto;text-align:center}
+.marquee{overflow:hidden;margin:0 calc(-1 * var(--pad-x));padding:4px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.marquee-track{display:flex;gap:20px;width:max-content;animation:msp-marquee 80s linear infinite}
+.marquee:hover .marquee-track,.marquee:focus-within .marquee-track{animation-play-state:paused}
+.marquee .quote-card{flex:none;width:min(360px,80vw);border:1px solid var(--border-default);padding:clamp(18px,2.6vw,24px);gap:18px;justify-content:space-between}
+@keyframes msp-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* Testimonial quote marks: bold, light blue on light sections, yellow on navy */
+blockquote,.quote-text{font-style:normal}
+.qm{font-weight:700;color:var(--msp-blue)}
+.on-navy .qm{color:var(--msp-yellow)}
 .site-footer{background:var(--msp-navy);padding:28px var(--pad-x);display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
 .site-footer span{font-size:13px;color:#fff}
 
@@ -205,6 +215,15 @@ img{max-width:100%}
 .video .play{width:84px;height:84px;border-radius:50%;background:var(--msp-red);display:flex;align-items:center;justify-content:center;font-size:clamp(24px,3vw,30px);color:#fff;padding-left:6px}
 .video .cap{font-size:15px;color:#fff}
 .video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#000}
+.video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.stage-quote{margin:8px auto 0;max-width:640px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
+.stage-quote blockquote{margin:0;font-size:clamp(16px,1.6vw,18px);line-height:1.6;color:#fff;text-wrap:pretty}
+.stage-quote figcaption,.book-quote figcaption{font-size:14px;color:#fff}
+.stage-quote figcaption strong{font-family:var(--font-display);color:var(--msp-yellow)}
+.book-quote{margin:0 auto;max-width:680px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;border-top:2px dashed var(--msp-navy-80);border-bottom:2px dashed var(--msp-navy-80);padding:20px 0}
+.book-quote blockquote{margin:0;font-family:var(--font-display);font-weight:700;font-size:clamp(18px,2vw,22px);line-height:1.4;color:#fff;text-wrap:pretty}
+.book-quote figcaption strong{color:var(--msp-yellow)}
 .center-row{display:flex;justify-content:center;padding-top:12px}
 
 .res-section{padding:clamp(48px,6vw,88px) var(--pad-x-app);background:#fff}
@@ -231,14 +250,13 @@ img{max-width:100%}
 .wrap-1080{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(20px,3vw,28px)}
 .quote-card.solid{border:1px solid var(--border-default);padding:clamp(20px,3vw,28px);gap:clamp(14px,2vw,20px);justify-content:space-between}
 .quote-card.solid blockquote{color:var(--text-body)}
-.quote-card.solid figcaption{gap:14px}
 .book{padding:clamp(48px,6vw,88px) var(--pad-x-app);background:var(--msp-navy)}
 .book-inner{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
 .book-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
 .book-head h2{font-size:clamp(28px,3.4vw,40px);line-height:1.12;color:#fff}
 .book-head p{font-size:clamp(16px,1.6vw,18px);line-height:1.6;color:#fff;max-width:34em}
-.book-frame{background:#fff;border-radius:16px;overflow:hidden}
-.book-frame iframe{width:100%;min-width:320px;height:760px;border:0;display:block}
+.book-frame{width:100%;max-width:700px;margin:0 auto;border-radius:16px;overflow:hidden}
+.book-frame iframe{width:100%;min-width:320px;height:700px;border:0;display:block}
 
 /* ======================================================================
    REPORT
@@ -294,7 +312,7 @@ img{max-width:100%}
 .page.dark .helped h3{font-size:clamp(18px,1.8vw,20px);color:var(--msp-yellow)}
 .page.dark .helped .t{display:flex;flex-direction:column;gap:6px}
 .page.dark .helped .t p{font-size:16px;line-height:1.6}
-.page.dark .helped .t span{font-size:14px;color:#fff}
+.page.dark .helped .t>span{font-size:14px;color:#fff}
 .page.answers{gap:clamp(14px,2vw,20px)}
 .ans-row{display:grid;grid-template-columns:32px minmax(0,1fr);gap:4px 12px;padding:12px 0;border-bottom:1px solid var(--border-default)}
 .ans-row .n{font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--msp-blue)}
@@ -317,4 +335,8 @@ img{max-width:100%}
 
 @media (prefers-reduced-motion:reduce){
   *{transition:none !important}
+  /* carousel becomes a plain scrollable row, without the duplicate copy */
+  .marquee-track{animation:none !important}
+  .marquee{overflow-x:auto !important}
+  .marquee [data-dup]{display:none}
 }

@@ -8,7 +8,7 @@ public/              static site (Pages build output)
   css/styles.css     design tokens + styles (self-hosted Lufga / Neuzeit Grotesk)
   js/app.js          questions, scoring, tracking, lead POST
   assets/img/        WebP images
-  assets/fonts/      brand fonts (.otf)
+  assets/fonts/      brand fonts (.woff2)
   _headers           cache + security headers
 functions/api/lead.js  POST /api/lead → Ontraport
 wrangler.toml
@@ -38,10 +38,12 @@ After that, every push to `main` deploys to production and other branches get pr
 | `autoAdvance` | `true` | Go to the next question 260ms after an answer |
 | `leadEndpoint` | `/api/lead` | |
 | `booking` | calendly.com/the-msp-growth-hub/right-fit-clarity-call | Gets `name`, `email` and `a1` (phone); see Booking below |
-| `videoEmbedUrl` | `''` | Set to Stuart's video embed URL to replace the placeholder |
 | `siteUrl` | https://themspgrowthhubquiz.com/ | Base of the personal `?report=` link; must match the live domain |
 
-Testimonial headshots: add WebP files to `public/assets/img/` and set `photo` on each entry in `TESTIMONIALS` / `QUIZ_PROOF`. Until then initials are shown.
+Also in `js/app.js`:
+
+- `STAGE_VIDEOS`: one Vimeo embed URL per stage, shown on the results page as "Next Step: Watch Ian Explain The {Stage} Stage". An empty entry shows a placeholder instead.
+- `TESTIMONIALS` (results page and report), `STAGE_QUOTES` (one per stage, under the video) and `BOOK_QUOTE` (Ben S., above the calendar). The landing page carousel shows each of these people once. Names are first name plus last initial.
 
 ## Scoring
 
@@ -82,9 +84,7 @@ Put local secrets in `.dev.vars` (git-ignored) if you want the function to reach
 
 ## Open items
 
-- Stuart's video (placeholder)
-- Quotes about the quiz and testimonial headshots (placeholders)
-- Fonts are served as .otf; converting to .woff2 would cut font weight roughly in half
+- None in the site code. Calendly's first custom question must be "Phone" (see Booking).
 
 ## Personal report link
 
@@ -94,7 +94,11 @@ The report prints as A4 portrait (`@page { size: A4 portrait; margin: 0 }`, each
 
 ## Booking (Calendly)
 
-- The results page `#book` section embeds `https://calendly.com/the-msp-growth-hub/right-fit-clarity-call?hide_event_type_details=1&hide_gdpr_banner=1` inline, as an iframe with `embed_type=Inline&embed_domain=<host>`.
+- The results page `#book` section embeds (700px wide at most, centred, 700px tall, no colour parameters) `https://calendly.com/the-msp-growth-hub/right-fit-clarity-call?hide_event_type_details=1&hide_gdpr_banner=1` inline, as an iframe with `embed_type=Inline&embed_domain=<host>`.
 - It is pre-filled with `name`, `email` and `a1` = phone. `a1` is the first custom question on the Calendly event, so that question must be "Phone". Empty values are left out.
 - The report's "Book" button opens the same URL (without the embed parameters) in a new tab.
 - The results email lives in Ontraport, not in this repo. Its booking button deliberately links to `https://go.themspgrowthhub.com/are-we-the-right-fit/`; don't change it to Calendly.
+
+## Fonts
+
+Lufga and Neuzeit Grotesk (Regular and Bold) are served as WOFF2, about 120 KB for all four instead of 210 KB as OTF. The three fonts the landing page uses (Lufga Bold, Neuzeit Regular and Bold) are preloaded in `index.html`. Lufga Regular is only used on the quiz answers, so it loads on demand.

@@ -9,9 +9,15 @@
     leadEndpoint: '/api/lead',
     // Calendly event; pre-filled with name, email and a1 (first custom question, which must be "Phone")
     booking: 'https://calendly.com/the-msp-growth-hub/right-fit-clarity-call?hide_event_type_details=1&hide_gdpr_banner=1',
-    videoEmbedUrl: '',        // e.g. a YouTube/Vimeo embed URL for Stuart's video; empty = placeholder
     siteUrl: 'https://themspgrowthhubquiz.com/'  // base for the personal ?report= link
+  };
 
+  // One video from Ian per stage (Vimeo embeds). Leave a stage empty to show the placeholder instead.
+  const STAGE_VIDEOS = {
+    survive: 'https://player.vimeo.com/video/1240740985?h=03c272e4b7&title=0&byline=0&portrait=0&dnt=1',
+    drive: 'https://player.vimeo.com/video/1240740987?h=67435567c6&title=0&byline=0&portrait=0&dnt=1',
+    thrive: 'https://player.vimeo.com/video/1240740986?h=b490aa01df&title=0&byline=0&portrait=0&dnt=1',
+    arrive: 'https://player.vimeo.com/video/1240727261?h=1346ae7c48&title=0&byline=0&portrait=0&dnt=1'
   };
 
   // ---------- Content ----------
@@ -62,17 +68,23 @@
     arrive: { key: 'arrive', name: 'Arrive', lede: 'You\'re in the Arrive stage. Not many MSPs get here.',
       body: 'Your business works for you: a great team, healthy profits and the freedom to give back, shape the future and lead the industry. So the real questions are: what made you take the score, and what\'s next for you?' }
   };
-  // photo: set to an image path (e.g. 'assets/img/andy.webp') once headshots are supplied
+  // Client names are first name + last initial only
   const TESTIMONIALS = [
-    { quote: 'I came looking for accountability and help prioritising the 3.5 million items on my to-do list. The massive, unexpected bonus is the support I get from the other MSPs in the group.', name: 'Andy Wilkinson', role: 'Owner, Pronetic Ltd', photo: '' },
-    { quote: 'Ian and Stuart are passionate about helping your MSP grow. Their dedication to you and your business helps you achieve your goals, and grow personally too.', name: 'Jamie Lymer', role: 'Founding Partner, geekingITsimple', photo: '' },
-    { quote: 'Given me accountability and confidence to focus on growing the business.', name: 'Jason Carlton', role: 'Director, Uptech Ltd', photo: '' }
+    { quote: 'In the last three years the business has grown from a stuck and struggling £500K to nearly £2million and from 10 to 22 staff, including having the confidence to merge with another MSP.', name: 'Neil S.', role: 'Managing Director, Reform IT' },
+    { quote: 'Through Ian & Stuart\'s support and coaching, we have grown by 35% in year one of the MSP Mastery programme.', name: 'Chris G.', role: 'Co-Owner, Apex Computing' },
+    { quote: 'The return on investment has been realised both financially (my turnover has increased 10x) and by getting some time back. I now have time to spend with my family and enjoy my weekends.', name: 'Dave N.', role: 'Better-IT Ltd' }
   ];
-  const QUIZ_PROOF = [
-    { quote: 'Placeholder: quote from an MSP owner about what the score showed them.', name: '[Name]', role: '[Role, Company]', photo: '' },
-    { quote: 'Placeholder: e.g. "I found two moves I could make that same week."', name: '[Name]', role: '[Role, Company]', photo: '' },
-    { quote: 'Placeholder: e.g. "Three minutes, and I finally knew what was holding us back."', name: '[Name]', role: '[Role, Company]', photo: '' }
-  ];
+  // Shown under the stage video, matched to the person's stage
+  const STAGE_QUOTES = {
+    survive: { quote: 'My business had hit a ceiling… but with the tools, training and mentorship of MSP Growth Hub, we\'ve been able to remove that ceiling.', name: 'Paul G.', role: 'SystemWise' },
+    drive: { quote: 'Stuart & Ian have helped us focus on what WE need to do, which has reduced overwhelm. They also coach our Leadership Team, which has aligned everyone in the vision of the business.', name: 'Jason F.', role: 'ESP Projects' },
+    thrive: { quote: 'We\'ve grown from a stuck and struggling £500K to nearly £2million, including having the confidence to merge with another MSP. We have more opportunity and potential today than ever.', name: 'Neil S.', role: 'Managing Director, Reform IT' },
+    arrive: { quote: 'My turnover has increased 10x, and I\'ve got time back. I now have time to spend with my family and enjoy my weekends.', name: 'Dave N.', role: 'Better-IT Ltd' }
+  };
+  // Shown above the booking calendar
+  const BOOK_QUOTE = { quote: 'If you\'re thinking about reaching out, you\'re nervous, you\'re not quite sure where you\'re going, then just have a chat with Ian and Stuart because you won\'t regret it.', name: 'Ben S.', role: 'BLS Computer Solutions' };
+  // Landing carousel: one review per person
+  const REVIEWS_ALL = (() => { const seen = new Set(); return [...TESTIMONIALS, ...Object.values(STAGE_QUOTES), BOOK_QUOTE].filter(r => !seen.has(r.name) && seen.add(r.name)); })();
 
   // ---------- Helpers ----------
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -80,7 +92,6 @@
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;' }[c]));
   const maxOf = q => Math.max(...q.o.map(x => x[2]));
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const initials = name => /^\[/.test(name) ? '' : name.split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
   const setText = (sel, v) => $$(sel).forEach(el => { el.textContent = v; });
 
   // Funnel events → Cloudflare Zaraz (forwards to Meta Pixel, LinkedIn, GA etc. as configured in the dashboard)
@@ -289,8 +300,10 @@
   }
 
   // ---------- Results ----------
-  const avatar = (t, size) => `<span class="avatar avatar-${size}" aria-hidden="true">${t.photo ? `<img src="${esc(t.photo)}" alt="" loading="lazy">` : esc(initials(t.name))}</span>`;
-  const quoteCard = (t, cls, size) => `<figure class="quote-card ${cls}"><blockquote>“${esc(t.quote)}”</blockquote><figcaption>${avatar(t, size)}<span class="who"><b>${esc(t.name)}</b><small>${esc(t.role)}</small></span></figcaption></figure>`;
+  // Quote text with bold, coloured quote marks (colour comes from CSS: blue on light, yellow inside .on-navy)
+  const quoted = t => `<span class="qm">“</span>${esc(t.quote)}<span class="qm">”</span>`;
+  const quoteCard = (t, cls = '', attrs = '') => `<figure class="quote-card ${cls}"${attrs}><blockquote>${quoted(t)}</blockquote><figcaption class="who"><b>${esc(t.name)}</b><small>${esc(t.role)}</small></figcaption></figure>`;
+  const captionedQuote = t => `<blockquote>${quoted(t)}</blockquote><figcaption><strong>${esc(t.name)}</strong> · ${esc(t.role)}</figcaption>`;
   const setPill = (sel, stage, outlineSurvive, label) => $$(sel).forEach(el => {
     el.className = `pill ${stage.key}${outlineSurvive && stage.key === 'survive' ? ' outline' : ''} ${sel.slice(1)}`;
     el.textContent = label;
@@ -321,7 +334,11 @@
         <div class="bar" role="img" aria-label="${p.pct}%"><i style="width:${p.pct}%"></i></div>
         <p>${esc(p.text)}</p>
       </div>`).join('');
-    $('#res-testimonials').innerHTML = TESTIMONIALS.map(t => quoteCard(t, 'solid', 56)).join('');
+    $('#res-testimonials').innerHTML = TESTIMONIALS.map(t => quoteCard(t, 'solid')).join('');
+    setText('.js-stage-name', s.stage.name);
+    renderVideo(s.stage);
+    $('#stage-quote').innerHTML = captionedQuote(STAGE_QUOTES[s.stage.key]);
+    $('#book-quote').innerHTML = captionedQuote(BOOK_QUOTE);
     const frame = $('#booking-frame'), url = bookingEmbedUrl();
     if (frame.getAttribute('src') !== url) frame.setAttribute('src', url);
   }
@@ -345,22 +362,46 @@
         </div>
         <p class="p16">${esc(p.text)}</p>
       </div>`).join('');
-    $('#rep-testimonials').innerHTML = TESTIMONIALS.map(t => `<div class="t"><p>“${esc(t.quote)}”</p><span><strong>${esc(t.name)}</strong> · ${esc(t.role)}</span></div>`).join('');
+    $('#rep-testimonials').innerHTML = TESTIMONIALS.map(t => `<div class="t"><p class="quote-text">${quoted(t)}</p><span><strong>${esc(t.name)}</strong> · ${esc(t.role)}</span></div>`).join('');
     $('#rep-answers').innerHTML = Q.map((x, i) => `<div class="ans-row"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="q">${esc(x.t)}</span><span class="a">${esc(answerText(i) || '—')}</span></div>`).join('');
   }
 
   // ---------- Video ----------
+  // Stage video from Ian, or the placeholder when that stage has no video yet
+  function renderVideo(stage) {
+    const url = STAGE_VIDEOS[stage.key] || '';
+    const holder = $('#video-frame');
+    holder.hidden = !url;
+    $('#video').hidden = !!url;
+    if (url && holder.dataset.src !== url) {
+      holder.dataset.src = url;
+      holder.dataset.tracked = '';
+      holder.innerHTML = `<iframe src="${esc(url)}" title="${esc(stage.name)} stage video from Ian" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+      // Ask the Vimeo player to tell us when it starts playing, so video_play still fires
+      holder.querySelector('iframe').addEventListener('load', e => {
+        try { e.target.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'play' }), 'https://player.vimeo.com'); } catch (err) { /* ignore */ }
+      });
+    }
+  }
+  window.addEventListener('message', e => {
+    if (e.origin !== 'https://player.vimeo.com') return;
+    let d = e.data;
+    try { if (typeof d === 'string') d = JSON.parse(d); } catch (err) { return; }
+    const holder = $('#video-frame');
+    if (d && d.event === 'play' && !holder.dataset.tracked) {
+      holder.dataset.tracked = '1';
+      track('video_play', { stage: score().stage.name });
+    }
+  });
   function playVideo() {
     track('video_play', { stage: score().stage.name });
-    if (!CONFIG.videoEmbedUrl) return;
-    const v = $('#video');
-    v.innerHTML = `<iframe src="${esc(CONFIG.videoEmbedUrl)}" title="Stuart explains your score" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-    v.removeAttribute('data-action');
   }
 
   // ---------- Wiring ----------
   function init() {
-    $('#quiz-proof').innerHTML = QUIZ_PROOF.map(t => quoteCard(t, 'dashed', 48)).join('');
+    // Carousel: the list twice so it can loop seamlessly; the copy is hidden from screen readers
+    $('#review-track').innerHTML = REVIEWS_ALL.map(t => quoteCard(t)).join('') +
+      REVIEWS_ALL.map(t => quoteCard(t, '', ' aria-hidden="true" data-dup')).join('');
 
     document.addEventListener('click', e => {
       const opt = e.target.closest('#q-opts .opt');
