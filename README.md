@@ -75,7 +75,13 @@ If Zaraz isn't loaded (e.g. local preview), events are queued on `window.__quizE
 
 `functions/api/lead.js` maps these to Ontraport custom fields f2375–f2384 (f2384 = Report Link), saves `company` to the standard Company field and applies the tag `Quiz Taken - Stage: {Survive|Drive|Thrive|Arrive}`. It returns `{ ok: true }` only once Ontraport confirms the contact save.
 
+## Submission reliability
 
+- After submit the button reads "Saving Your Results…" and the quiz waits for `/api/lead` to return `{ ok: true }`, capped at 5 seconds. If Ontraport is slower, results show anyway and the request carries on (`keepalive`).
+- The browser retries once (after 1.2s). The function retries the Ontraport contact save once (after 0.8s).
+- The stage tag is added in the background with `waitUntil`, with one retry, so the visitor only waits for the contact save.
+- If both attempts fail within the 5 seconds, the form shows an inline error and a "Try Again →" button, and `lead_submit_failed` is sent to Zaraz.
+- The function logs failures with `console.error`: Cloudflare → Pages → Functions → Real-time logs.
 
 ## Local preview
 
