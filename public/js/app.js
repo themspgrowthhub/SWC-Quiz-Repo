@@ -288,15 +288,46 @@
       source: 'msp-confidence-score', submittedAt: new Date().toISOString(),
       pageUrl: location.href, referrer: document.referrer
     };
-    sendLead(payload);
-    track('lead_submitted', { stage: stage.name, overall_score: overall });
-    state.submitted = true;
-    go('results');
+    if (submitting) return;
+    setSubmitState('saving');
+    sendLead(payload).then(() => {
+      track('lead_submitted', { stage: stage.name, overall_score: overall });
+      setSubmitState('idle');
+      state.submitted = true;
+      go('results');
+    }).catch(() => {
+      track('lead_submit_failed');
+      setSubmitState('error');
+    });
   }
-  async function sendLead(payload) {
-    try {
-      await fetch(CONFIG.leadEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true });
-    } catch (e) { console.warn('Lead endpoint not reachable:', e.message); }
+
+  // Button label, disabled state and inline error for the lead form
+  let submitting = false;
+  function setSubmitState(s) {
+    submitting = s === 'saving';
+    const btn = $('#lead-submit');
+    btn.disabled = submitting;
+    btn.textContent = submitting ? 'Saving Your Results…' : s === 'error' ? 'Try Again →' : 'Show My Score →';
+    $('#submit-error').hidden = s !== 'error';
+  }
+
+  // Waits up to 5s for /api/lead to confirm { ok: true }, retrying once.
+  // If Ontraport is slower than that, results show anyway and the save carries on (keepalive).
+  // Rejects only when both attempts fail within the 5s.
+  function sendLead(payload) {
+    const body = JSON.stringify(payload);
+    const attempt = async () => {
+      const res = await fetch(CONFIG.leadEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok || !j.ok) throw new Error(j.error || 'HTTP ' + res.status);
+      return j;
+    };
+    const withRetry = attempt().catch(() => new Promise(r => setTimeout(r, 1200)).then(attempt));
+    let timedOut = false;
+    const timeout = new Promise(r => setTimeout(() => { timedOut = true; r({ ok: true, slow: true }); }, 5000));
+    // A failure after the visitor has moved on still gets reported
+    withRetry.catch(e => { if (timedOut) track('lead_submit_failed', { after_timeout: true }); console.error('Lead save failed:', e.message); });
+    return Promise.race([withRetry, timeout]);
   }
 
   // ---------- Results ----------

@@ -1,8 +1,8 @@
 // Cloudflare Pages Function: POST /api/lead
-// Receives the quiz payload and creates/updates the contact in Ontraport.
-// Secrets (set in Cloudflare → Pages → Settings → Variables and Secrets):
-//   ONTRAPORT_APP_ID, ONTRAPORT_API_KEY
-// Ontraport custom field IDs (configured 20 Oct 2026). Never hard-code the API key here.
+// Creates/updates the contact in Ontraport (with one retry), then tags it.
+// Returns { ok: true } only when Ontraport confirms the save.
+// Secrets (Cloudflare → Pages → Settings → Variables and Secrets): ONTRAPORT_APP_ID, ONTRAPORT_API_KEY
+// Never hard-code the API key here.
 
 const FIELD = {
   overallScore: 'f2375',
@@ -19,7 +19,7 @@ const FIELD = {
 
 const API = 'https://api.ontraport.com/1';
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost({ request, env, waitUntil }) {
   let d;
   try { d = await request.json(); } catch { return json({ ok: false, error: 'Bad JSON' }, 400); }
   if (!d.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) return json({ ok: false, error: 'Invalid email' }, 400);
@@ -48,19 +48,36 @@ export async function onRequestPost({ request, env }) {
     [FIELD.answers]: (d.answers || []).map((x, i) => `${i + 1}. ${x.q} — ${x.a}`).join('\n')
   };
 
-  const res = await fetch(`${API}/Contacts/saveorupdate`, { method: 'POST', headers, body: JSON.stringify(contact) });
-  if (!res.ok) return json({ ok: false, error: 'Ontraport save failed', status: res.status }, 502);
-  const saved = await res.json();
-  const id = saved?.data?.id ?? saved?.data?.attrs?.id;
+  let res = await saveContact(headers, contact);
+  if (!res.ok) { await sleep(800); res = await saveContact(headers, contact); }
+  if (!res.ok) {
+    console.error('Ontraport save failed', res.status, await safeText(res), d.email);
+    return json({ ok: false, error: 'CRM save failed' }, 502);
+  }
 
-  // Tags drive Ontraport automations (follow-up emails per stage, report delivery etc.)
+  const saved = await res.json().catch(() => ({}));
+  const id = saved?.data?.id ?? saved?.data?.attrs?.id;
+  // Tag in the background so the visitor isn't kept waiting (tags trigger the Ontraport automations)
   if (id) {
-    await fetch(`${API}/objects/tagByName`, {
-      method: 'PUT', headers,
-      body: JSON.stringify({ objectID: 0, ids: [id], add_names: [`Quiz Taken - Stage: ${d.stage}`] })
-    });
+    const tagIt = async () => {
+      for (let i = 0; i < 2; i++) {
+        const t = await fetch(`${API}/objects/tagByName`, {
+          method: 'PUT', headers,
+          body: JSON.stringify({ objectID: 0, ids: [id], add_names: [`Quiz Taken - Stage: ${d.stage}`] })
+        }).catch(() => null);
+        if (t && t.ok) return;
+        await sleep(800);
+      }
+      console.error('Ontraport tag failed', d.email);
+    };
+    waitUntil(tagIt());
   }
   return json({ ok: true });
 }
 
+const saveContact = (headers, contact) =>
+  fetch(`${API}/Contacts/saveorupdate`, { method: 'POST', headers, body: JSON.stringify(contact) })
+    .catch(() => new Response(null, { status: 599 }));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const safeText = r => r.text().catch(() => '');
 const json = (b, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { 'Content-Type': 'application/json' } });

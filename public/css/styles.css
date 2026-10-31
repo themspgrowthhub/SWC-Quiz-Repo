@@ -78,7 +78,7 @@ img{max-width:100%}
 .site-header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--border-default);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px var(--pad-x)}
 .hero{padding:clamp(24px,5vw,72px) var(--pad-x) clamp(48px,7vw,96px);max-width:1280px;width:100%;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:clamp(32px,5vw,72px);align-items:center}
 .hero-copy{display:flex;flex-direction:column;gap:clamp(20px,3vw,28px)}
-.badge{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:var(--msp-blue-wash);font-family:var(--font-display);font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--msp-navy)}
+.badge{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:var(--msp-blue-wash);font-family:var(--font-display);font-weight:700;font-size:clamp(11px,1.4vw,13px);letter-spacing:clamp(.04em,.6vw,.1em);white-space:nowrap;max-width:100%;text-transform:uppercase;color:var(--msp-navy)}
 .hero h1{font-size:clamp(36px,5.2vw,60px);line-height:1.08;letter-spacing:-.02em}
 .hero h1 span{color:var(--msp-blue)}
 .hero-sub{font-size:clamp(19px,1.8vw,22px);line-height:1.6;color:var(--msp-navy);max-width:30em}
@@ -193,6 +193,7 @@ blockquote,.quote-text{font-style:normal}
 .field.invalid input{border-color:var(--status-danger)}
 .field .err{font-size:13px;color:var(--status-danger)}
 .fine{font-size:13px;line-height:1.5;color:var(--text-muted)}
+.submit-error{padding:12px 14px;border:1.5px solid var(--msp-red);border-radius:8px;font-size:15px;line-height:1.5;color:var(--msp-navy)}
 .report-mock-wrap{position:relative;display:flex;justify-content:center;padding:24px 0}
 .report-mock-wrap .blue-block{position:absolute;top:0;right:8%;bottom:0;left:18%;background:var(--msp-blue);border-radius:16px}
 .report-mock{position:relative;display:block;align-self:center;flex:none;width:min(100%,320px);height:auto;aspect-ratio:801/1160;object-fit:contain;border-radius:8px;box-shadow:var(--shadow-lg);transform:rotate(-3deg)}

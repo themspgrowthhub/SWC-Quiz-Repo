@@ -65,6 +65,7 @@ Also in `js/app.js`:
 | booking_click | Book button | location (results/report) |
 | report_viewed / report_downloaded | Report | — |
 | report_link_opened | Report opened from a `?report=` link | — |
+| lead_submit_failed | Lead save failed (see Submission reliability) | `after_timeout: true` if it failed after results were already shown |
 
 If Zaraz isn't loaded (e.g. local preview), events are queued on `window.__quizEvents` instead.
 
@@ -72,7 +73,9 @@ If Zaraz isn't loaded (e.g. local preview), events are queued on `window.__quizE
 
 `firstName, lastName, email, phone, company, overallScore, stage, ambitionScore, capacityScore, opportunitiesScore, biggestConstraint, teamSize, turnover, answers[], reportLink, source, submittedAt, pageUrl, referrer`
 
-`functions/api/lead.js` maps these to Ontraport custom fields f2375–f2384 (f2384 = Report Link), saves `company` to the standard Company field and applies the tag `Quiz Taken - Stage: {Survive|Drive|Thrive|Arrive}`.
+`functions/api/lead.js` maps these to Ontraport custom fields f2375–f2384 (f2384 = Report Link), saves `company` to the standard Company field and applies the tag `Quiz Taken - Stage: {Survive|Drive|Thrive|Arrive}`. It returns `{ ok: true }` only once Ontraport confirms the contact save.
+
+
 
 ## Local preview
 
