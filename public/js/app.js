@@ -12,13 +12,26 @@
     siteUrl: 'https://themspgrowthhubquiz.com/'  // base for the personal ?report= link
   };
 
-  // One video from Ian per stage (Vimeo embeds). Leave a stage empty to show the placeholder instead.
+  // One video from Ian per stage: Vidalytics embed IDs. Leave a stage empty to show the placeholder instead.
+  const VIDALYTICS_ACCOUNT = 'RjevIxxp';
   const STAGE_VIDEOS = {
-    survive: 'https://player.vimeo.com/video/1240740985?h=03c272e4b7&title=0&byline=0&portrait=0&dnt=1',
-    drive: 'https://player.vimeo.com/video/1240740987?h=67435567c6&title=0&byline=0&portrait=0&dnt=1',
-    thrive: 'https://player.vimeo.com/video/1240740986?h=b490aa01df&title=0&byline=0&portrait=0&dnt=1',
-    arrive: 'https://player.vimeo.com/video/1240727261?h=1346ae7c48&title=0&byline=0&portrait=0&dnt=1'
+    survive: 'Jiok76WXosL4ew8s',
+    drive: 'vPwUu1UQ_Alsbprr',
+    thrive: 'u66aNMwq2pw3A39A',
+    arrive: '7LT4IbYs5djVDVhF'
   };
+  // Official Vidalytics loader, wrapped so it can run for whichever stage video is on screen
+  function runVidalytics(a, l) {
+    (function (v, i, d, a, l, y, t, c, s) {
+      y='_'+d.toLowerCase();c=d+'L';if(!v[d]){v[d]={};}if(!v[c]){v[c]={};}if(!v[y]){v[y]={};}var vl='Loader',vli=v[y][vl],vsl=v[c][vl + 'Script'],vlf=v[c][vl + 'Loaded'],ve='Embed';
+      if (!vsl){vsl=function(u,cb){
+        if(t){cb();return;}s=i.createElement("script");s.type="text/javascript";s.async=1;s.src=u;
+        if(s.readyState){s.onreadystatechange=function(){if(s.readyState==="loaded"||s.readyState=="complete"){s.onreadystatechange=null;vlf=1;cb();}};}else{s.onload=function(){vlf=1;cb();};}
+        i.getElementsByTagName("head")[0].appendChild(s);
+      };}
+      vsl(l+'loader.min.js',function(){if(!vli){var vlc=v[c][vl];vli=new vlc();}vli.loadScript(l+'player.min.js',function(){var vec=v[d][ve];t=new vec();t.run(a);});});
+    })(window, document, 'Vidalytics', a, l);
+  }
 
   // ---------- Content ----------
   const PILLARS = [
@@ -165,6 +178,7 @@
   // restored = re-showing a saved screen after a refresh, so funnel events aren't double-counted
   function go(screen, restored) {
     state.screen = screen; save();
+    if (screen !== 'results') unmountVideo();
     $$('[data-screen]').forEach(el => { el.hidden = el.dataset.screen !== screen; });
     if (!restored) window.scrollTo(0, 0);
     const t = restored ? () => {} : track;
@@ -398,38 +412,45 @@
   }
 
   // ---------- Video ----------
-  // Stage video from Ian, or the placeholder when that stage has no video yet
+  // Stage video from Ian, or the placeholder when that stage has no video yet.
+  // Mounted fresh each time the results page shows; only the person's stage video loads.
   function renderVideo(stage) {
-    const url = STAGE_VIDEOS[stage.key] || '';
+    const id = STAGE_VIDEOS[stage.key] || '';
     const holder = $('#video-frame');
-    holder.hidden = !url;
-    $('#video').hidden = !!url;
-    if (url && holder.dataset.src !== url) {
-      holder.dataset.src = url;
-      holder.dataset.tracked = '';
-      holder.innerHTML = `<iframe src="${esc(url)}" title="${esc(stage.name)} stage video from Ian" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-      // Ask the Vimeo player to tell us when it starts playing, so video_play still fires
-      holder.querySelector('iframe').addEventListener('load', e => {
-        try { e.target.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'play' }), 'https://player.vimeo.com'); } catch (err) { /* ignore */ }
-      });
-    }
+    holder.hidden = !id;
+    $('#video').hidden = !!id;
+    unmountVideo();
+    if (!id) return;
+    holder.dataset.tracked = '';
+    const embedId = 'vidalytics_embed_' + id;
+    holder.innerHTML = `<div id="${embedId}" style="width:100%;position:relative;padding-top:56.25%"></div>`;
+    // Always go through the loader: it carries this video's settings, which the shared player script doesn't
+    runVidalytics(embedId, `https://fast.vidalytics.com/embeds/${VIDALYTICS_ACCOUNT}/${id}/`);
+    track('video_loaded', { stage: stage.key });
   }
-  window.addEventListener('message', e => {
-    if (e.origin !== 'https://player.vimeo.com') return;
-    let d = e.data;
-    try { if (typeof d === 'string') d = JSON.parse(d); } catch (err) { return; }
+  // The results page is only hidden when you leave it, so remove the player or it keeps playing behind the report
+  function unmountVideo() {
     const holder = $('#video-frame');
-    if (d && d.event === 'play' && !holder.dataset.tracked) {
-      holder.dataset.tracked = '1';
-      track('video_play', { stage: score().stage.name });
-    }
-  });
+    holder.querySelectorAll('video').forEach(v => v.pause());
+    holder.innerHTML = '';
+  }
   function playVideo() {
     track('video_play', { stage: score().stage.name });
+  }
+  // The player's <video> sits in the page, so its play event can be caught here (once per load).
+  // These videos autoplay, so this usually fires without a click.
+  function watchVideoPlay() {
+    const holder = $('#video-frame');
+    holder.addEventListener('play', () => {
+      if (holder.dataset.tracked) return;
+      holder.dataset.tracked = '1';
+      playVideo();
+    }, true);
   }
 
   // ---------- Wiring ----------
   function init() {
+    watchVideoPlay();
     // Carousel: the list twice so it can loop seamlessly; the copy is hidden from screen readers
     $('#review-track').innerHTML = REVIEWS_ALL.map(t => quoteCard(t)).join('') +
       REVIEWS_ALL.map(t => quoteCard(t, '', ' aria-hidden="true" data-dup')).join('');

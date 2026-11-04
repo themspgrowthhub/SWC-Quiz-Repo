@@ -42,7 +42,7 @@ After that, every push to `main` deploys to production and other branches get pr
 
 Also in `js/app.js`:
 
-- `STAGE_VIDEOS`: one Vimeo embed URL per stage, shown on the results page as "Next Step: Watch Ian Explain The {Stage} Stage". An empty entry shows a placeholder instead.
+- `STAGE_VIDEOS`: one Vidalytics embed ID per stage, see Stage videos below. An empty entry shows a placeholder instead.
 - `TESTIMONIALS` (results page and report), `STAGE_QUOTES` (one per stage, under the video) and `BOOK_QUOTE` (Ben S., above the calendar). The landing page carousel shows each of these people once. Names are first name plus last initial.
 
 ## Scoring
@@ -61,7 +61,8 @@ Also in `js/app.js`:
 | quiz_completed | Reaches final step | — |
 | lead_submitted | Form submitted | stage, overall_score |
 | results_viewed | Results shown | — |
-| video_play | Video clicked | stage |
+| video_loaded | Stage video loads on the results page | stage |
+| video_play | Stage video starts playing (they autoplay, so usually without a click), once per load | stage |
 | booking_click | Book button | location (results/report) |
 | report_viewed / report_downloaded | Report | — |
 | report_link_opened | Report opened from a `?report=` link | — |
@@ -94,6 +95,13 @@ Put local secrets in `.dev.vars` (git-ignored) if you want the function to reach
 ## Open items
 
 - None in the site code. Calendly's first custom question must be "Phone" (see Booking).
+
+## Stage videos
+
+- Videos are hosted on Vidalytics (account `RjevIxxp`): Survive `Jiok76WXosL4ew8s`, Drive `vPwUu1UQ_Alsbprr`, Thrive `u66aNMwq2pw3A39A`, Arrive `7LT4IbYs5djVDVhF`. Only the video for the person's stage loads.
+- The results page renders `<div id="vidalytics_embed_<ID>">` and runs the official loader (`runVidalytics()`). The loader must run every time: each video's settings are in its own `loader.min.js`, and `player.min.js` is shared.
+- The player is removed when the visitor leaves the results page, otherwise it would keep playing behind the report. It loads again from the start when they come back.
+- The heading reads "Next Step: Watch Ian Explain The {Stage} Stage".
 
 ## Personal report link
 
